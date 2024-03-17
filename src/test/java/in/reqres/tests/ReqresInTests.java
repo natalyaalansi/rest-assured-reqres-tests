@@ -1,114 +1,111 @@
 package in.reqres.tests;
 
-import io.restassured.response.Response;
+import in.reqres.models.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static in.reqres.specs.ReqresSpecs.*;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReqresInTests extends TestBase {
-
     @Test
-    void successfulLoginTest() {
-        String body = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"cityslicka\" }";
+    @DisplayName("Successful login")
+    void login() {
+        LoginBodyModel authData = new LoginBodyModel();
+        authData.setEmail("eve.holt@reqres.in");
+        authData.setPassword("cityslicka");
 
-        Response response = given()
-                .log().uri()
-                .log().method()
-                .log().body()
-                .contentType(JSON)
-                .body(body)
-                .when()
-                .post("/login")
-                .then()
-                .log().status()
-                .log().body()
-                .body(matchesJsonSchemaInClasspath("schemas/success-login-schema.json"))
-                .extract().response();
+        LoginResponseModel response = step("Make request", () ->
+                given(loginRequestSpec)
+                        .body(authData)
+                        .when()
+                        .post()
+                        .then()
+                        .spec(universalResponseSpecWithStatusCode200)
+                        .body(matchesJsonSchemaInClasspath("schemas/success-login-schema.json"))
+                        .extract().as(LoginResponseModel.class));
 
-        assertThat(response.statusCode(), is(200));
-        assertThat(response.path("token"), is(notNullValue()));
+        step("Check response", () ->
+                assertThat(response.getToken()).isNotNull());
     }
 
     @Test
-    void noContentTypeTest() {
-        String body = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"cityslicka\" }";
+    @DisplayName("Unsuccessful login with a missing Content Type")
+    void loginWithNoContentType() {
+        LoginBodyModel authData = new LoginBodyModel();
+        authData.setEmail("eve.holt@reqres.in");
+        authData.setPassword("cityslicka");
 
-        Response response = given()
-                .log().uri()
-                .log().method()
-                .log().body()
-                .body(body)
-                .when()
-                .post("/login")
-                .then()
-                .log().status()
-                .log().body()
-                .extract().response();
+        LoginResponseErrorModel response = step("Make request", () ->
+                given(loginRequestSpecWithNoContentType)
+                        .body(authData)
+                        .when()
+                        .post()
+                        .then()
+                        .spec(loginResponseSpecWithStatusCode400)
+                        .extract().as(LoginResponseErrorModel.class));
 
-        assertThat(response.statusCode(), is(400));
-        assertThat(response.path("error"), is("Missing email or username"));
+        step("Check response", () ->
+                assertThat(response.getError()).isEqualTo("Missing email or username"));
     }
 
     @Test
-    void successfulDisplayOfUsersList() {
+    @DisplayName("Unsuccessful login with a missing password")
+    void loginWithNoPassword() {
+        LoginBodyModel authData = new LoginBodyModel();
+        authData.setEmail("eve.holt@reqres.in");
 
-        Response response = given()
-                .log().uri()
-                .log().method()
-                .when()
-                .get("/users?page=1")
-                .then()
-                .log().status()
-                .log().body()
-                .body(matchesJsonSchemaInClasspath("schemas/success-users-list-schema.json"))
-                .extract().response();
+        LoginResponseErrorModel response = step("Make request", () ->
+                given(loginRequestSpec)
+                        .body(authData)
+                        .when()
+                        .post()
+                        .then()
+                        .spec(loginResponseSpecWithStatusCode400)
+                        .extract().as(LoginResponseErrorModel.class));
 
-        assertThat(response.statusCode(), is(200));
-        assertThat(response.path("page"), is(1));
-        assertThat(response.path("per_page"), is(6));
+        step("Check response", () ->
+                assertThat(response.getError()).isEqualTo("Missing password"));
     }
 
     @Test
-    void successfulDisplayOfSingleUser() {
+    @DisplayName("Display users list")
+    void displayOfUsersList() {
 
-        Response response = given()
-                .log().uri()
-                .log().method()
-                .when()
-                .get("/users/1")
-                .then()
-                .log().status()
-                .log().body()
-                .body(matchesJsonSchemaInClasspath("schemas/success-single-user-schema.json"))
-                .extract().response();
+        UsersListResponseModel response = step("Make request", () ->
+                given(usersListRequestSpec)
+                        .when()
+                        .get()
+                        .then()
+                        .spec(universalResponseSpecWithStatusCode200)
+                        .body(matchesJsonSchemaInClasspath("schemas/success-users-list-schema.json"))
+                        .extract().as(UsersListResponseModel.class));
 
-        assertThat(response.statusCode(), is(200));
-        assertThat(response.path("data.id"), is(1));
-        assertThat(response.path("data.email"), is("george.bluth@reqres.in"));
-        assertThat(response.path("data.first_name"), is("George"));
-        assertThat(response.path("data.last_name"), is("Bluth"));
+        step("Check response", () ->
+                assertThat(response.getPage()).isEqualTo(1));
     }
 
     @Test
-    void unsuccessfulDisplayOfZeroIdUser() {
+    @DisplayName("Display users")
+    void displayOfUser() {
 
-        Response response = given()
-                .log().uri()
-                .log().method()
-                .when()
-                .get("/users/0")
-                .then()
-                .log().status()
-                .log().body()
-                .extract().response();
+        UserDataResponseModel response = step("Make request", () ->
+                given(usersRequestSpec)
+                        .when()
+                        .get()
+                        .then()
+                        .spec(universalResponseSpecWithStatusCode200)
+                        .body(matchesJsonSchemaInClasspath("schemas/success-single-user-schema.json"))
+                        .extract().as(UserDataResponseModel.class));
 
-        assertThat(response.statusCode(), is(404));
+        step("Check response", () -> {
+            assertThat(response.getData().getId()).isEqualTo(1);
+            assertThat(response.getData().getEmail()).isEqualTo("george.bluth@reqres.in");
+            assertThat(response.getData().getFirstName()).isEqualTo("George");
+            assertThat(response.getData().getLastName()).isEqualTo("Bluth");
+        });
     }
-
 }
