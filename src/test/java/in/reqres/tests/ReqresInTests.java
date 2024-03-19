@@ -4,9 +4,11 @@ import in.reqres.models.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static in.reqres.specs.ReqresSpecs.*;
+import static in.reqres.specs.ReqresSpecs.requestSpec;
+import static in.reqres.specs.ReqresSpecs.responseSpec;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,12 +21,13 @@ public class ReqresInTests extends TestBase {
         authData.setPassword("cityslicka");
 
         LoginResponseModel response = step("Make request", () ->
-                given(loginRequestSpec)
+                given(requestSpec)
+                        .contentType(JSON)
                         .body(authData)
                         .when()
-                        .post()
+                        .post("/login")
                         .then()
-                        .spec(universalResponseSpecWithStatusCode200)
+                        .spec(responseSpec(200))
                         .body(matchesJsonSchemaInClasspath("schemas/success-login-schema.json"))
                         .extract().as(LoginResponseModel.class));
 
@@ -40,12 +43,12 @@ public class ReqresInTests extends TestBase {
         authData.setPassword("cityslicka");
 
         LoginResponseErrorModel response = step("Make request", () ->
-                given(loginRequestSpecWithNoContentType)
+                given(requestSpec)
                         .body(authData)
                         .when()
-                        .post()
+                        .post("/login")
                         .then()
-                        .spec(loginResponseSpecWithStatusCode400)
+                        .spec(responseSpec(400))
                         .extract().as(LoginResponseErrorModel.class));
 
         step("Check response", () ->
@@ -59,12 +62,13 @@ public class ReqresInTests extends TestBase {
         authData.setEmail("eve.holt@reqres.in");
 
         LoginResponseErrorModel response = step("Make request", () ->
-                given(loginRequestSpec)
+                given(requestSpec)
+                        .contentType(JSON)
                         .body(authData)
                         .when()
-                        .post()
+                        .post("/login")
                         .then()
-                        .spec(loginResponseSpecWithStatusCode400)
+                        .spec(responseSpec(400))
                         .extract().as(LoginResponseErrorModel.class));
 
         step("Check response", () ->
@@ -76,12 +80,12 @@ public class ReqresInTests extends TestBase {
     void displayOfUsersList() {
 
         UsersListResponseModel response = step("Make request", () ->
-                given(usersListRequestSpec)
+                given(requestSpec)
                         .when()
-                        .get()
+                        .get("/users?page=1")
                         .then()
-                        .spec(universalResponseSpecWithStatusCode200)
                         .body(matchesJsonSchemaInClasspath("schemas/success-users-list-schema.json"))
+                        .spec(responseSpec(200))
                         .extract().as(UsersListResponseModel.class));
 
         step("Check response", () ->
@@ -93,19 +97,19 @@ public class ReqresInTests extends TestBase {
     void displayOfUser() {
 
         UserDataResponseModel response = step("Make request", () ->
-                given(usersRequestSpec)
+                given(requestSpec)
                         .when()
-                        .get()
+                        .get("/users/1")
                         .then()
-                        .spec(universalResponseSpecWithStatusCode200)
+                        .spec(responseSpec(200))
                         .body(matchesJsonSchemaInClasspath("schemas/success-single-user-schema.json"))
                         .extract().as(UserDataResponseModel.class));
 
         step("Check response", () -> {
-            assertThat(response.getData().getId()).isEqualTo(1);
-            assertThat(response.getData().getEmail()).isEqualTo("george.bluth@reqres.in");
-            assertThat(response.getData().getFirstName()).isEqualTo("George");
-            assertThat(response.getData().getLastName()).isEqualTo("Bluth");
+            assertThat(response.getUser().getId()).isEqualTo(1);
+            assertThat(response.getUser().getEmail()).isEqualTo("george.bluth@reqres.in");
+            assertThat(response.getUser().getFirstName()).isEqualTo("George");
+            assertThat(response.getUser().getLastName()).isEqualTo("Bluth");
         });
     }
 }
