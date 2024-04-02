@@ -76,7 +76,7 @@ public class ReqresInTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Display users list")
+    @DisplayName("Users list is displayed")
     void displayOfUsersList() {
 
         UsersListResponseModel response = step("Make request", () ->
@@ -93,7 +93,7 @@ public class ReqresInTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Display users")
+    @DisplayName("A single user is displayed")
     void displayOfUser() {
 
         UserDataResponseModel response = step("Make request", () ->
