@@ -11,7 +11,7 @@ Reqres.in is a resource that provides a public API that you can use to build and
 - <a href="#report">Allure Report</a>
 - <a href="#testops">Allure TestOps integration</a>
 - <a href="#jira">Jira integration</a>
-- <a href="#telegram">Telegram notifications via bot</a>
+- <a href="#telegram">Telegram notification via bot</a>
 
 <a id="technologies"></a>
 ## Tools and technologies
@@ -68,4 +68,4 @@ clean test
 
 <a id="telegram"></a>
 ## <img alt="Telegram" src="images/logo/Telegram.svg" width="40" height="40"/>Telegram notifications via bot 
-<img title="Telegram notifications via bot" src="images/attachment/tg.png">  
+<img title="Telegram notification via bot" src="images/attachment/tg.png">  
