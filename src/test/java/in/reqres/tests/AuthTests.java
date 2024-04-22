@@ -1,6 +1,8 @@
 package in.reqres.tests;
 
-import in.reqres.models.*;
+import in.reqres.models.LoginBodyModel;
+import in.reqres.models.LoginResponseErrorModel;
+import in.reqres.models.LoginResponseModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,7 @@ import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ReqresInTests extends TestBase {
+public class AuthTests extends TestBase{
     @Test
     @DisplayName("Successful login")
     void login() {
@@ -73,43 +75,5 @@ public class ReqresInTests extends TestBase {
 
         step("Check response", () ->
                 assertThat(response.getError()).isEqualTo("Missing password"));
-    }
-
-    @Test
-    @DisplayName("Users list is displayed")
-    void displayOfUsersList() {
-
-        UsersListResponseModel response = step("Make request", () ->
-                given(requestSpec)
-                        .when()
-                        .get("/users?page=1")
-                        .then()
-                        .body(matchesJsonSchemaInClasspath("schemas/success-users-list-schema.json"))
-                        .spec(responseSpec(200))
-                        .extract().as(UsersListResponseModel.class));
-
-        step("Check response", () ->
-                assertThat(response.getPage()).isEqualTo(1));
-    }
-
-    @Test
-    @DisplayName("A single user is displayed")
-    void displayOfUser() {
-
-        UserDataResponseModel response = step("Make request", () ->
-                given(requestSpec)
-                        .when()
-                        .get("/users/1")
-                        .then()
-                        .spec(responseSpec(200))
-                        .body(matchesJsonSchemaInClasspath("schemas/success-single-user-schema.json"))
-                        .extract().as(UserDataResponseModel.class));
-
-        step("Check response", () -> {
-            assertThat(response.getUser().getId()).isEqualTo(1);
-            assertThat(response.getUser().getEmail()).isEqualTo("george.bluth@reqres.in");
-            assertThat(response.getUser().getFirstName()).isEqualTo("George");
-            assertThat(response.getUser().getLastName()).isEqualTo("Bluth");
-        });
     }
 }
