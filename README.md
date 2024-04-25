@@ -41,24 +41,22 @@ Reqres.in is a resource that provides a public API that you can use to build and
 
 <a id="running"></a>
 ## Running Autotests
-
-### Local/Jenkins run
 ```
 gradle clean test
 ```
 
 <a id="report"></a>
-## <img alt="Allure Reports" src="images/logo/Allure.svg" width="40" height="40"/> [Allure Report]()
+## <img alt="Allure Reports" src="images/logo/Allure.svg" width="40" height="40"/> [Allure Report](https://jenkins.autotests.cloud/job/rest-assured-reqres-tests_ansi/3/allure/)
 <img title="Allure Overview" src="images/attachment/allure_overview.png"> 
 <img title="Allure Suites" src="images/attachment/allure_suites.png"> 
 
 <a id="testops"></a>
-## <img alt="Allure TestOps" src="images/logo/Allure_TO.svg" width="40" height="40"/> [Allure TestOps integration]()
+## <img alt="Allure TestOps" src="images/logo/Allure_TO.svg" width="40" height="40"/> [Allure TestOps integration](https://allure.autotests.cloud/project/4155/dashboards)
 <img title="TestOps Results" src="images/attachment/testops_launches.png"> 
 <img title="TestOps Suites" src="images/attachment/testops_tc.png"> 
 
 <a id="jira"></a>
-## <img alt="Jira" src="images/logo/Jira.svg" width="40" height="40"/> [Jira integration]()
+## <img alt="Jira" src="images/logo/Jira.svg" width="40" height="40"/> [Jira integration](https://jira.autotests.cloud/browse/HOMEWORK-1181)
 <img title="Jira integration" src="images/attachment/jira.png"> 
 
 <a id="telegram"></a>

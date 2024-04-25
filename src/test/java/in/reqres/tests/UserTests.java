@@ -12,7 +12,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserTests extends TestBase{
+public class UserTests extends TestBase {
     @Test
     @DisplayName("Users list is displayed")
     void displayOfUsersList() {

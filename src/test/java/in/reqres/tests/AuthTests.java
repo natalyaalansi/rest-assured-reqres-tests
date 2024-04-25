@@ -14,7 +14,7 @@ import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AuthTests extends TestBase{
+public class AuthTests extends TestBase {
     @Test
     @DisplayName("Successful login")
     void login() {
